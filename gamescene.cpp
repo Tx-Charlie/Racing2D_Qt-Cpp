@@ -3,14 +3,16 @@
 #include <QDebug>
 #include <QGraphicsPixmapItem>
 #include <QKeyEvent>
+
 GameScene::GameScene(QObject *parent)
-    : QGraphicsScene{parent}, m_game(), m_timer(new QTimer(this))
+    : QGraphicsScene{parent}, m_game(), m_timer(new QTimer(this)),
+      m_upDir(false), m_rightDir(false), m_downDir(false), m_leftDir(false)
 {
     loadPixmap();
     setSceneRect(0, 0, Game::RESOLUTION.width(), Game::RESOLUTION.height());
     connect(m_timer, &QTimer::timeout, this, &GameScene::update);
 
-    //m_timer->start(m_game.ITERATION_VALUE);
+    m_timer->start(m_game.ITERATION_VALUE);
     update();
 }
 
@@ -36,6 +38,98 @@ void GameScene::loadPixmap()
     }
 }
 
+void GameScene::carMovement()
+{
+    if (m_upDir && m_game.speed < m_game.maxSpeed)
+    {
+        if (m_game.speed < 0)
+        {
+            m_game.speed += m_game.dec;
+        }
+        else
+        {
+            m_game.speed += m_game.acc;
+        }
+    }
+
+    if (m_downDir && m_game.speed > -m_game.maxSpeed)
+    {
+        if (m_game.speed > 0)
+        {
+            m_game.speed -= m_game.dec;
+        }
+        else
+        {
+            m_game.speed -= m_game.acc;
+        }
+    }
+
+
+    if (!m_upDir && !m_downDir)
+    {
+        if (m_game.speed - m_game.dec > 0)
+        {
+            m_game.speed -= m_game.dec;
+        }
+        else if (m_game.speed + m_game.dec < 0)
+        {
+            m_game.speed += m_game.dec;
+        }
+        else
+        {
+            m_game.speed = 0;
+        }
+    }
+
+
+    if (m_rightDir && m_game.speed!=0)
+    {
+        m_game.angle += m_game.turnSpeed * m_game.speed/m_game.maxSpeed;
+    }
+
+    if (m_leftDir && m_game.speed!=0)
+    {
+        m_game.angle -= m_game.turnSpeed * m_game.speed/m_game.maxSpeed;
+    }
+
+    m_game.car[0].speed = m_game.speed;
+    m_game.car[0].angle = m_game.angle;
+
+    for(int i = 0; i < m_game.COUNT_OF_CARS; i++)
+    {
+        m_game.car[i].move();
+    }
+
+    for(int i=1; i < m_game.COUNT_OF_CARS ;i++)
+    {
+        m_game.car[i].findTarget();
+    }
+}
+
+void GameScene::carCollision()
+{
+    for(int i = 0; i < Game::COUNT_OF_CARS;i++)
+    {
+        for(int j=0; j<Game::COUNT_OF_CARS;j++)
+        {
+            int dx=0, dy=0;
+            while (dx*dx + dy*dy < 4* m_game.car_R*m_game.car_R)
+             {
+               m_game.car[i].x += dx/10.0;
+               m_game.car[i].x += dy/10.0;
+               m_game.car[j].x -= dx/10.0;
+               m_game.car[j].y -= dy/10.0;
+               dx = m_game.car[i].x - m_game.car[j].x;
+               dy = m_game.car[i].y - m_game.car[j].y;
+               if (!dx && !dy)
+               {
+                   break;
+               }
+             }
+        }
+    }
+}
+
 void GameScene::update()
 {
     clear();
@@ -44,15 +138,100 @@ void GameScene::update()
     bgItem->setScale(2);
     addItem(bgItem);
 
-    QGraphicsPixmapItem* carItem = new QGraphicsPixmapItem(m_carPixmap);
-    carItem->setTransformationMode(Qt::SmoothTransformation);
-    carItem->setScale(1);
-    carItem->setPos(200, 200);
-    addItem(carItem);
+//    QGraphicsPixmapItem* carItem = new QGraphicsPixmapItem(m_carPixmap);
+//    carItem->setTransformationMode(Qt::SmoothTransformation);
+//    carItem->setScale(1);
+//    carItem->setPos(200, 200);
+//    addItem(carItem);
+
+    carMovement();
+    carCollision();
+
+    if (m_game.car[0].x > 320)
+    {
+        m_game.offsetX = m_game.car[0].x-320;
+    }
+    if ( m_game.car[0].y > 240)
+    {
+        m_game.offsetY = m_game.car[0].y-240;
+    }
+    bgItem->setPos(-m_game.offsetX, -m_game.offsetY);
+
+
+    for(int i=0; i < Game::COUNT_OF_CARS; i++)
+    {
+        QGraphicsPixmapItem* carItem = new QGraphicsPixmapItem(m_carPixmap);
+        carItem->setTransformationMode(Qt::SmoothTransformation);
+        carItem->setScale(1);
+        carItem->setTransformOriginPoint(22, 22);
+        carItem->setPos(m_game.car[i].x - m_game.offsetX, m_game.car[i].y - m_game.offsetY);
+        carItem->setRotation(m_game.car[i].angle * 180/3.141593);
+        addItem(carItem);
+    }
 }
 
 void GameScene::keyPressEvent(QKeyEvent *event)
 {
-
+//    if(event->isAutoRepeat())
+//    {
+//        return;
+//    }
+    switch (event->key()) {
+    case Qt::Key_Up:
+    case Qt::Key_W:
+    {
+        m_upDir = true;
+    }
+        break;
+    case Qt::Key_Right:
+    case Qt::Key_D:
+    {
+        m_rightDir = true;
+    }
+        break;
+    case Qt::Key_Down:
+    case Qt::Key_S:
+    {
+        m_downDir = true;
+    }
+        break;
+    case Qt::Key_A:
+    case Qt::Key_Left:
+    {
+        m_leftDir = true;
+    }
+        break;
+    }
     QGraphicsScene::keyPressEvent(event);
+}
+
+void GameScene::keyReleaseEvent(QKeyEvent *event)
+{
+    switch (event->key()) {
+    case Qt::Key_Up:
+    case Qt::Key_W:
+    {
+        m_upDir = false;
+    }
+        break;
+    case Qt::Key_Right:
+    case Qt::Key_D:
+    {
+        m_rightDir = false;
+    }
+        break;
+    case Qt::Key_Down:
+    case Qt::Key_S:
+    {
+        m_downDir = false;
+    }
+        break;
+    case Qt::Key_A:
+    case Qt::Key_Left:
+    {
+        m_leftDir = false;
+    }
+        break;
+    }
+    QGraphicsScene::keyReleaseEvent(event);
 }

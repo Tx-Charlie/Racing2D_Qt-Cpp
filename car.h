@@ -8,7 +8,7 @@ struct Car
   int num_checkpoints;
   int points[8][2];
 
-  Car(int _num_checkpoints, const int _points[8][2])
+  Car(int _num_checkpoints = 0, const int _points[8][2] = {})
       : speed(2), angle(0), n(0)
   {
         num_checkpoints = _num_checkpoints;

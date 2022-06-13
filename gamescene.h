@@ -23,9 +23,15 @@ private:
     QTimer* m_timer;
     QPixmap m_bgPixmap, m_carPixmap;
 
+    bool m_upDir, m_rightDir, m_downDir, m_leftDir;
     // QGraphicsScene interface
+    void carMovement();
+
+    void carCollision();
+
 protected:
     virtual void keyPressEvent(QKeyEvent *event) override;
+    virtual void keyReleaseEvent(QKeyEvent *event) override;
 };
 
 #endif // GAMESCENE_H
