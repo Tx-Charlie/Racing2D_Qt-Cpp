@@ -22,6 +22,10 @@ private:
     Game m_game;
     QTimer* m_timer;
     QPixmap m_bgPixmap, m_carPixmap;
+
+    // QGraphicsScene interface
+protected:
+    virtual void keyPressEvent(QKeyEvent *event) override;
 };
 
 #endif // GAMESCENE_H
