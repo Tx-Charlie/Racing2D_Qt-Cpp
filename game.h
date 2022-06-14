@@ -12,7 +12,7 @@ public:
     static const int points[8][2];
     static const QSize RESOLUTION;
     const QString PATH_TO_BACKGROUND_PIXMAP;
-    const QString PATH_TO_CAR_PIXMAP;
+    const QString PATH_TO_CAR_PIXMAP[5];
     const float ITERATION_VALUE;
 
     float car_R;

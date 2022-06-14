@@ -28,13 +28,49 @@ void GameScene::loadPixmap()
     }
 
 
-    if(m_carPixmap.load(m_game.PATH_TO_CAR_PIXMAP))
+    if(m_carPixmap[0].load(m_game.PATH_TO_CAR_PIXMAP[0]))
     {
-        qDebug() << "CarPixmap is loaded successfully";
+        qDebug() << "CarPixmap[0] is loaded successfully";
     }
     else
     {
-        qDebug() << "CarPixmap is loaded successfully";
+        qDebug() << "CarPixmap[0] is loaded successfully";
+    }
+
+    if(m_carPixmap[1].load(m_game.PATH_TO_CAR_PIXMAP[1]))
+    {
+        qDebug() << "CarPixmap[1] is loaded successfully";
+    }
+    else
+    {
+        qDebug() << "CarPixmap[1] is loaded successfully";
+    }
+
+    if(m_carPixmap[2].load(m_game.PATH_TO_CAR_PIXMAP[2]))
+    {
+        qDebug() << "CarPixmap[2] is loaded successfully";
+    }
+    else
+    {
+        qDebug() << "CarPixmap[2] is loaded successfully";
+    }
+
+    if(m_carPixmap[3].load(m_game.PATH_TO_CAR_PIXMAP[3]))
+    {
+        qDebug() << "CarPixmap[3] is loaded successfully";
+    }
+    else
+    {
+        qDebug() << "CarPixmap[3] is loaded successfully";
+    }
+
+    if(m_carPixmap[4].load(m_game.PATH_TO_CAR_PIXMAP[4]))
+    {
+        qDebug() << "CarPixmap[4] is loaded successfully";
+    }
+    else
+    {
+        qDebug() << "CarPixmap[4] is loaded successfully";
     }
 }
 
@@ -160,10 +196,11 @@ void GameScene::update()
 
     for(int i=0; i < Game::COUNT_OF_CARS; i++)
     {
-        QGraphicsPixmapItem* carItem = new QGraphicsPixmapItem(m_carPixmap);
+        QGraphicsPixmapItem* carItem = new QGraphicsPixmapItem(m_carPixmap[i]);
         carItem->setTransformationMode(Qt::SmoothTransformation);
         carItem->setScale(1);
-        carItem->setTransformOriginPoint(22, 22);
+        //42x69 average of pixmaps
+        carItem->setTransformOriginPoint(21, 34);
         carItem->setPos(m_game.car[i].x - m_game.offsetX, m_game.car[i].y - m_game.offsetY);
         carItem->setRotation(m_game.car[i].angle * 180/3.141593);
         addItem(carItem);
@@ -172,10 +209,6 @@ void GameScene::update()
 
 void GameScene::keyPressEvent(QKeyEvent *event)
 {
-//    if(event->isAutoRepeat())
-//    {
-//        return;
-//    }
     switch (event->key()) {
     case Qt::Key_Up:
     case Qt::Key_W:

@@ -21,12 +21,11 @@ private:
 
     Game m_game;
     QTimer* m_timer;
-    QPixmap m_bgPixmap, m_carPixmap;
+    QPixmap m_bgPixmap, m_carPixmap[5];
 
     bool m_upDir, m_rightDir, m_downDir, m_leftDir;
     // QGraphicsScene interface
     void carMovement();
-
     void carCollision();
 
 protected:
