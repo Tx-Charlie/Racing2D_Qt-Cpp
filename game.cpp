@@ -33,8 +33,8 @@ Game::Game()
     for(int i=0; i < COUNT_OF_CARS;i++)
     {
       car[i] = Car(num_checkpoints, points);
-      car[i].x = 300+i*50;
-      car[i].y = 1700+i*80;
+      car[i].x = 400+i*50;
+      car[i].y = 3480+i*80;
       car[i].speed = 7+i;
     }
     /*

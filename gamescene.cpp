@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QGraphicsPixmapItem>
 #include <QKeyEvent>
+#include <QDir>
+#include <QPainter>
 
 GameScene::GameScene(QObject *parent)
     : QGraphicsScene{parent}, m_game(), m_timer(new QTimer(this)),
@@ -166,6 +168,19 @@ void GameScene::carCollision()
     }
 }
 
+void GameScene::renderScene()
+{
+    static int index = 0;
+    QString fileName = QDir::currentPath() + QDir::separator() + "screen" + QString::number(index++) + ".png";
+    QRect rect = sceneRect().toAlignedRect();
+    QImage image(rect.size(), QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+    QPainter painter(&image);
+    render(&painter);
+    image.save(fileName);
+    qDebug() << "saved " << fileName;
+}
+
 void GameScene::update()
 {
     clear();
@@ -232,6 +247,11 @@ void GameScene::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Left:
     {
         m_leftDir = true;
+    }
+        break;
+    case Qt::Key_Z:
+    {
+        renderScene();
     }
         break;
     }

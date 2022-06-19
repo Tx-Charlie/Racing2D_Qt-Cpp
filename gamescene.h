@@ -27,7 +27,7 @@ private:
     // QGraphicsScene interface
     void carMovement();
     void carCollision();
-
+    void renderScene();
 protected:
     virtual void keyPressEvent(QKeyEvent *event) override;
     virtual void keyReleaseEvent(QKeyEvent *event) override;
