@@ -1,7 +1,9 @@
 #ifndef GAME_H
 #define GAME_H
-#include "car.h"
+
 #include <QSize>
+#include <QString>
+
 #include "car.h"
 
 class Game
